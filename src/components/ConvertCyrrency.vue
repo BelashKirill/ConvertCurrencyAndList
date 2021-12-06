@@ -17,32 +17,38 @@
         result: ''
       }
     },
+    computed: {
+      selectedTextArray() {
+        return this.selectedText.split(' ');
+      },
+      amount() {
+        return this.selectedTextArray[0];
+      },
+      firstCur() {
+        if (this.selectedTextArray.length > 1) {
+          return this.selectedTextArray[1];
+        }
+      },
+      secondCur() {
+        if (this.selectedTextArray.length > 3) {
+          return this.selectedTextArray[3];
+        }
+      },
+      ListCurrency() {
+          return store.state.arrayСurrency;
+      }
+    },
     methods: {
       resultConvert() {
-        this.result = 'Please wait...';
-
-        function update(value) {
-          return new Promise(resolve => {
-            store.dispatch("getCurrency", value);
-            setTimeout(() => {
-              resolve();
-            }, 0)
-          });
+        async function update(value) {
+          await store.dispatch("getCurrency", value);
         }
-        
-        update(this.selectedText.split(' ')[1]).then(() => {
-          setTimeout(() => {
-            const storeCur = store.state.arrayСurrency;
 
-            for (let i = 0; i < storeCur.length; i++) {
-              if (String(this.selectedText.split(' ')[3]).toUpperCase() === storeCur[i][0]) {
-                const fixedResult = (this.selectedText.split(' ')[0] * storeCur[i][1]).toFixed(2);
-                
-                this.result = `Result: ${fixedResult} ${this.selectedText.split(' ')[3].toUpperCase()}`;
-              }
-            }
-          }, 1500)
-        })
+        update(this.firstCur).then(() => {
+          if (this.ListCurrency.hasOwnProperty(String(this.secondCur).toUpperCase())) {
+            this.result = `Result: ${(this.amount * this.ListCurrency[String(this.secondCur).toUpperCase()]).toFixed(3)} ${this.secondCur.toUpperCase()}`;
+          }
+        });
       }
     },
   }

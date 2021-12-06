@@ -1,15 +1,8 @@
 <template>
-    <b-card>
-        <b-form-select
-        v-model="ex1Selected"
-        :options="setListCyrrency"
-        size="sm"
-        class="mt-3"
-        @input="updateList(ex1Selected)"
-        >
-        </b-form-select>
-        <div class="mt-3">Base Currency: <strong>{{ actualCur }}</strong></div>
-    </b-card>
+    <select class="form-select" aria-label="Default select example" v-model="selected" @change="updateList(selected)">
+        <option v-for="(item, index) in ListCurrency" :key="item.id" :value="index">{{index}}</option>
+    </select>
+    <div class="mt-3">Base Currency: <strong>{{ baseCurrencyInPage }}</strong></div>
     <table class="table">
         <thead>
             <tr>
@@ -18,9 +11,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="item in getListCurrency" :key="item.id">
-                <td>1 {{ item[0] }}</td>
-                <td>= {{ (1 / item[1]).toFixed(2) }} {{ actualCur }}</td>
+            <tr v-for="(item, index) in ListCurrency" :key="item.id">
+                <td>1 {{index}}</td>
+                <td>= {{(1 / item).toFixed(4)}} {{ baseCurrencyInPage }}</td>
             </tr>
         </tbody>
     </table>
@@ -33,35 +26,24 @@ export default {
     name: 'ListCurrency',
     data() {
         return {
-            actualCur: '',
-            ex1Selected: ''
+            selected: ''
         }
     },
     methods: {
         updateList(base) {
-            store.dispatch("getCurrency", base[0]);
+            store.dispatch("getCurrency", base);
         }
     },
     computed: {
-        getListCurrency() {
+        ListCurrency() {
             return store.state.arrayСurrency;
         },
-        setListCyrrency() {
-            const list = [];
-
-            for (const key in store.state.arrayСurrency) {
-                list.push([store.state.arrayСurrency[key][0]]);
-            }
-
-            return list;
+        baseCurrencyInPage() {
+            return store.state.baseCurrency;
         }
     },
     mounted() {
         store.dispatch("getCurrency", '');
-        this.actualCur = store.state.baseCurrency;
-    },
-    updated() {
-        this.actualCur = store.state.baseCurrency;
     }
 }
 </script>

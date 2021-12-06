@@ -4,7 +4,7 @@ import axios from 'axios'
 export default createStore({
   state: {
     arrayСurrency: [],
-    baseCurrency: ''
+    baseCurrency: '',
   },
   mutations: {
     getCurrency(state, data) {
@@ -15,21 +15,14 @@ export default createStore({
     }
   },
   actions: {
-    getCurrency(context, base) {
+    async getCurrency(context, base) {
       const baseCur = base != '' ? base : 'USD';
+      
+      context.commit('setBaseCurrency', baseCur);
 
-      axios
-        .get('https://freecurrencyapi.net/api/v2/latest?apikey=b27f1c40-5406-11ec-80ac-95b3a83fa42f&base_currency=' + baseCur.toUpperCase())
-        .then(response => {
-          const newArr = [];
+      const response = await axios.get('https://freecurrencyapi.net/api/v2/latest?apikey=b27f1c40-5406-11ec-80ac-95b3a83fa42f&base_currency=' + baseCur.toUpperCase());
 
-          for (const key in response.data.data) {
-            newArr.push([key, response.data.data[key]]);
-          }
-
-          context.commit('setBaseCurrency', baseCur);
-          context.commit('getCurrency', newArr);
-        });
+      context.commit('getCurrency', response.data.data);
     }
   },
   modules: {}
