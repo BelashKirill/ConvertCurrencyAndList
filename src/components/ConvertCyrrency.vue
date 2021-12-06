@@ -39,12 +39,11 @@
       }
     },
     methods: {
+      async updateCur(value) {
+        await store.dispatch("getCurrency", value);
+      },
       resultConvert() {
-        async function update(value) {
-          await store.dispatch("getCurrency", value);
-        }
-
-        update(this.firstCur).then(() => {
+        this.updateCur(this.firstCur).then(() => {
           if (this.ListCurrency.hasOwnProperty(String(this.secondCur).toUpperCase())) {
             this.result = `Result: ${(this.amount * this.ListCurrency[String(this.secondCur).toUpperCase()]).toFixed(3)} ${this.secondCur.toUpperCase()}`;
           }
